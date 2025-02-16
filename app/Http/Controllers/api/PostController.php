@@ -12,7 +12,24 @@ use function Pest\Laravel\json;
 use function Pest\Laravel\post;
 
 class PostController extends Controller
-{
+{    
+    public function validasi(){
+        return [
+            'title' => 'required|min:5|max:150',
+            'description' => 'required',
+            'image' => 'mimes:png,jpg,jpeg|max:5120'
+        ];
+    }
+    public function error_message(){
+        return [
+            'title.required' => 'judul harus diisi',
+            'title.min' => 'judul Minimal 5 karakter',
+            'title.max' => 'judul tidak boleh lebih dari 150 karakter',
+            'description.required' => 'Deskripsi harus diisi',
+            'image.mimes' => 'Gambar harus berupa png,jpg atau jpeg',
+            'image.max' => 'Ukuran file gambar tidak boleh lebih dari mb'
+        ];
+    }
     // get data post 10 per tabs
     public function index(){
         $post = Post::paginate(10);                               
@@ -47,24 +64,9 @@ class PostController extends Controller
         ]);
     }
     // Menambahkan data post
-    public function store(Request $request){        
-        // untuk validasi
-        $rules = [
-            'title' => 'required|min:5|max:150',
-            'description' => 'required',
-            'image' => 'mimes:png,jpg,jpeg|max:5120'
-        ];
-        // error feedback 
-        $error_message = [
-            'title.required' => 'judul harus diisi',
-            'title.min' => 'judul Minimal 5 karakter',
-            'title.max' => 'judul tidak boleh lebih dari 150 karakter',
-            'description.required' => 'Deskripsi harus diisi',
-            'image.mimes' => 'Gambar harus berupa png,jpg atau jpeg',
-            'image.max' => 'Ukuran file gambar tidak boleh lebih dari mb'
-        ];
-        $validator = Validator::make($request->all(),$rules,$error_message);        
-        // cek apakah validasi berhasil atau tidak
+    public function store(Request $request){          
+      
+        $validator = Validator::make($request->all(),$this->validasi(),$this->error_message());                
         // dd($validator);
         if($validator->fails()){
             return response()->json([
@@ -98,5 +100,19 @@ class PostController extends Controller
                 'message' => 'Ada sedikit masalah teknis'
             ]);
         }
+    }
+    // melanjutkan update
+    public function update(Request $request, $id){
+        
+    }
+    public function destroy($id){
+        $post = Post::find($id);
+        if(!$post){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'data tidak ditemukan'
+            ],404);            
+        }
+        $post->delete();
     }
 }
