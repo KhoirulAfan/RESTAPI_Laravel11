@@ -11,3 +11,4 @@ Route::get('/user', function (Request $request) {
 Route::apiResource('post',PostController::class)->middleware('check_auth');
 Route::post('login',[AuthController::class,'login'])->name('proseslogin');
 Route::post('register',[AuthController::class,'register'])->name('prosesregister');
+Route::post('logout',[AuthController::class,'logout'])->name('proseslogout');

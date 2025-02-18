@@ -55,6 +55,19 @@ class AuthController extends Controller
                 ]
             ],200);
         }
-        
     }
+    public function logout(){
+        if(!Auth::guard('sanctum')->check()){
+            return response()->json([
+                'status' => 'gagal',
+                'message' => 'anda tidak terautorisasi'
+            ]);
+        }
+        Auth::guard('sanctum')->user()->currentAccessToken()->delete();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Berhasil logout'
+        ]);
+    }
+
 }
