@@ -98,7 +98,7 @@ class PostController extends Controller
             return response()->json([
                 'error' => 'error',
                 'message' => 'Ada sedikit masalah teknis'
-            ]);
+            ],400);
         }
     }
     // melanjutkan update
@@ -108,7 +108,7 @@ class PostController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Data post tidak ditemukan'
-            ]);
+            ],404);
         }        
 
         // proses validasi
@@ -118,7 +118,7 @@ class PostController extends Controller
                 'status' => 'error',
                 'message' => 'Validasi Gagal',
                 'errors' => $validator->errors()
-            ]);
+            ],400);
         }
 
         // inisiasi data untuk diupdate
