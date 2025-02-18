@@ -103,7 +103,50 @@ class PostController extends Controller
     }
     // melanjutkan update
     public function update(Request $request, $id){
+        $post = Post::find($id);
+        if(!$post){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Data post tidak ditemukan'
+            ]);
+        }        
+
+        // proses validasi
+        $validator = Validator::make($request->all(),$this->validasi(),$this->error_message());
+        if($validator->fails()){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validasi Gagal',
+                'errors' => $validator->errors()
+            ]);
+        }
+
+        // inisiasi data untuk diupdate
+        $update = [
+            'title' => $request->title,
+            'description' => $request->description
+        ];
+        if($request->file('image')){
+            Storage::disk('public')->delete('images/'.$post->gambar);
+            $file = $request->file('image');
+            $file_name = $file->hashName();
+            Storage::disk('public')->putFileAs('images',$file,$file_name);            
+            $update['images'] = $file_name;
+        }
+        $updated = $post->update($update);
+        if(!$updated){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal mengubah data'
+            ],408);
+        }else{
+            return response()->json([
+                'status' => 'success',
+                'message' => 'berhasil mengubah data'
+            ],201);
+        }
         
+
     }
     public function destroy($id){
         $post = Post::find($id);
